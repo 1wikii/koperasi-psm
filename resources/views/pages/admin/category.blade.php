@@ -1,11 +1,11 @@
 @extends('layouts.admin-layout')
 
 @section('title')
-    <title>Category Management</title>
+    <title>Manajemen Kategori</title>
 @endsection
 
 @section('main')
-    <div class="min-h-screen bg-gray-50 p-6">
+    <div x-data="categoryManager()" class="min-h-screen bg-gray-50 p-6">
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
             <div class="mb-8">
@@ -13,151 +13,227 @@
             </div>
 
             <!-- Search Bar -->
-            <div class="mb-6">
-                <div class="relative max-w-md">
-                    <input type="text" id="search-categories" name="search" placeholder="Cari kategori..."
-                        class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
-                        value="{{ request('search') }}">
-                    <button type="submit"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </button>
+            <div class="mb-6 flex justify-between gap-x-4">
+                <div class="flex-1">
+                    <input type="text" x-model="searchQuery" @input="filterCategories" placeholder="Cari kategori..."
+                        class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white shadow-lg">
                 </div>
+
+                <!-- Add Button -->
+                <button x-on:click="openAddModal()"
+                    class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 shadow-lg rounded-lg flex items-center gap-2 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                        </path>
+                    </svg>
+                    Tambah Kategori
+                </button>
             </div>
 
             <!-- Categories Table -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <!-- Table Header -->
-                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                    <div class="grid grid-cols-12 gap-4 font-medium text-gray-700">
-                        <div class="col-span-4">
-                            <span>Nama Kategori</span>
-                        </div>
-                        <div class="col-span-3">
-                            <span>Jumlah Produk</span>
-                        </div>
-                        <div class="col-span-3">
-                            <span>Status</span>
-                        </div>
-                        <div class="col-span-2">
-                            <span>Aksi</span>
-                        </div>
-                    </div>
-                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <!-- Table Header -->
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr class="text-gray-900">
+                                <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                                    <span>Nama Kategori</span>
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                                    <span>Jumlah Produk</span>
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                                    <span>Status</span>
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                                    <span>Aksi</span>
+                                </th>
+                            </tr>
+                        </thead>
 
-                <!-- Table Body -->
-                <div class="divide-y divide-gray-200">
-                    @forelse($categories ?? [collect(['id' => 1, 'name' => 'Buku & Alat Tulis', 'products_count' => 15, 'status' => 'active'])] as $category)
+                        <!-- Table Body -->
+                        <tbody class="bg-white divide-y divide-gray-200">
 
-                        <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
-                            <div class="grid grid-cols-12 gap-4 items-center">
-                                <!-- Category Name -->
-                                <div class="col-span-4">
-                                    <span class="text-gray-900 font-medium">
-                                        {{ $category['name'] }}
-                                    </span>
-                                </div>
+                            <template x-data="{ showEditModal: {} }" x-for="category in paginatedCategories"
+                                :key="category.id">
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-gray-900 font-medium" x-text="category.name">
+                                            <!-- category.name -->
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-gray-900 font-medium" x-text="category.products_count">
+                                            <!-- category.products_count -->
+                                        </span>
+                                    </td>
 
-                                <!-- Product Count -->
-                                <div class="col-span-3">
-                                    <span class="text-gray-600">
-                                        {{  $category['products_count']  }}
-                                        produk
-                                    </span>
-                                </div>
+                                    <!-- Status -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full"
+                                            :class="getStatusClass(category.status)" x-text="category.status">
+                                            <!-- category.status -->
+                                        </span>
+                                    </td>
 
-                                <!-- Status -->
-                                <div class="col-span-3">
-                                    @php
-                                        $status = $category['status'];
-                                        $isActive = $status === 'active';
-                                    @endphp
-                                    <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $isActive ? 'Aktif' : 'Nonaktif' }}
-                                    </span>
-                                </div>
+                                    <!-- Actions -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center space-x-3">
+                                            <!-- Edit Button -->
+                                            <button type="button" x-on:click="showEditModal[category.id] = true"
+                                                class="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded"
+                                                title="Edit Kategori">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                    </path>
+                                                </svg>
+                                            </button>
 
-                                <!-- Actions -->
-                                <div class="col-span-2">
-                                    <div class="flex items-center space-x-3">
-                                        <!-- Edit Button -->
-                                        <button type="button" onclick="editCategory({{ $category['id'] }})"
-                                            class="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded"
-                                            title="Edit Kategori">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                </path>
-                                            </svg>
-                                        </button>
+                                            <!-- Delete Button -->
+                                            <button type="button" onclick=""
+                                                class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded"
+                                                title="Hapus Kategori">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
 
-                                        <!-- Delete Button -->
-                                        <button type="button" onclick="deleteCategory({{ $category['id'] }})"
-                                            class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded"
-                                            title="Hapus Kategori">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                </path>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="px-6 py-8 text-center">
-                            <div class="text-gray-500">
-                                <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
-                                    </path>
-                                </svg>
-                                <p class="text-lg font-medium mb-2">Tidak ada kategori</p>
-                                <p class="text-gray-400">Belum ada kategori yang ditambahkan</p>
-                            </div>
-                        </div>
-                    @endforelse
+                                <!-- Edit Modal -->
+                                <x-admin.modal.category-modal key="category.id" show="showEditModal" name="category.name"
+                                    status="category.status" />
+                            </template>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Pagination (if needed) -->
-            @if(isset($categories) && method_exists($categories, 'links'))
-                <div class="mt-6">
-                    {{ $categories->links() }}
-                </div>
-            @endif
+            <!-- Empty State -->
+            <x-admin.empty-table data="filteredCategories" />
+
+            <!-- Pagination -->
+            <x-admin.pagination data="filteredCategories" />
         </div>
+
+        <!-- Add Modal -->
+        <x-admin.modal.category-modal show="showAddModal" />
+
     </div>
 
     <!-- JavaScript for interactions -->
     <script>
-        function editCategory(categoryId) {
-            // Implement edit functionality
-            console.log('Edit category:', categoryId);
-            // You can redirect to edit page or open a modal
-            // window.location.href = `/categories/${categoryId}/edit`;
-        }
+        function categoryManager() {
+            return {
+                categories: [
+                    { id: 1, name: 'Elektronik', products_count: 10, status: 'Aktif' },
+                    { id: 2, name: 'Fashion', products_count: 5, status: 'Nonaktif' },
+                    { id: 3, name: 'Makanan', products_count: 8, status: 'Aktif' },
+                    { id: 4, name: 'Kecantikan', products_count: 12, status: 'Nonaktif' },
+                    { id: 5, name: 'Olahraga', products_count: 7, status: 'Aktif' },
+                    { id: 6, name: 'Peralatan Rumah', products_count: 15, status: 'Nonaktif' },
+                    { id: 7, name: 'Buku', products_count: 20, status: 'Aktif' },
+                    { id: 8, name: 'Mainan', products_count: 10, status: 'Nonaktif' },
+                ],
 
-        function deleteCategory(categoryId) {
-            if (confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
-                // Implement delete functionality
-                console.log('Delete category:', categoryId);
-                // You can send AJAX request or submit a form
-                // fetch(`/categories/${categoryId}`, { method: 'DELETE' })...
+                searchQuery: '',
+
+                // Pagination states
+                currentPage: 1,
+                itemsPerPage: 3,
+                filteredCategories: [], // This will hold the filtered categories
+
+                // Modal States
+                showAddModal: false,
+                showEditModal: false,
+
+                init() {
+                    this.filteredCategories = this.categories;
+                },
+
+                get paginatedCategories() {
+                    const start = (this.currentPage - 1) * this.itemsPerPage;
+                    const end = start + this.itemsPerPage;
+                    return this.filteredCategories.slice(start, end);
+                },
+
+                filterCategories() {
+                    let filtered = this.categories;
+
+                    if (this.searchQuery) {
+                        filtered = filtered.filter(category =>
+                            category.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+                        );
+                    }
+                    this.filteredCategories = filtered;
+                },
+
+                get totalPages() {
+                    return Math.ceil(this.filteredCategories.length / this.itemsPerPage);
+                },
+
+                getPageNumbers() {
+                    const pages = [];
+                    const maxVisible = 5;
+                    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+                    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+                    if (end - start + 1 < maxVisible) {
+                        start = Math.max(1, end - maxVisible + 1);
+                    }
+
+                    for (let i = start; i <= end; i++) {
+                        pages.push(i);
+                    }
+                    return pages;
+                },
+
+                goToPage(page) {
+                    if (page >= 1 && page <= this.totalPages) {
+                        this.currentPage = page;
+                    }
+                },
+
+                previousPage() {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                    }
+                },
+
+                nextPage() {
+                    if (this.currentPage < this.totalPages) {
+                        this.currentPage++;
+                    }
+                },
+
+                getStatusClass(status) {
+                    switch (status) {
+                        case 'Aktif':
+                            return 'bg-green-100 text-green-800';
+                        case 'Nonaktif':
+                            return 'bg-red-100 text-red-800';
+                    }
+                },
+
+
+                // Modal Handler
+                openAddModal() {
+                    this.showEditModal = false;
+                    this.showAddModal = true;
+                },
+
+                openEditModal() {
+                    this.showAddModal = false;
+                    this.showEditModal = true;
+                }
             }
         }
 
-        // Search functionality
-        document.getElementById('search-categories').addEventListener('input', function (e) {
-            // Implement live search or form submission
-            // You can debounce this for better performance
-            console.log('Search:', e.target.value);
-        });
     </script>
 @endsection

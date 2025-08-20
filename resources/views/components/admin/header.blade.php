@@ -45,37 +45,37 @@
 </header>
 
 <!-- Navigation Menu -->
-<nav class="bg-green-600 text-white sticky top-0 z-10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center space-x-8 h-12">
+<nav class="flex justify-center items-center p-1 bg-green-600 text-white sticky top-0 z-10">
+    <div class="flex justify-center items-center px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
             <a href="{{ route('admin.dashboard') }}"
                 class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-green-700' : '' }}">
                 Dashboard
             </a>
-            <a href="{{ route('product') }}"
-                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('product') ? 'bg-green-700' : '' }}">
+            <a href="{{ route('admin.categories') }}"
+                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('admin.categories') ? 'bg-green-700' : '' }}">
                 Kategori
             </a>
-            <a href="{{ route('about-us') }}"
-                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('about-us') ? 'bg-green-700' : '' }}">
+            <a href="{{ route('admin.product') }}"
+                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('admin.product') ? 'bg-green-700' : '' }}">
                 Produk
             </a>
-            <a href="{{ route('cart') }}"
-                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('cart') ? 'bg-green-700' : '' }}">
+            <a href="{{ route('admin.orders') }}"
+                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('admin.orders') ? 'bg-green-700' : '' }}">
                 Pesanan
             </a>
-            <a href="{{ route('cart') }}"
-                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('cart') ? 'bg-green-700' : '' }}">
+            <a href="{{ route('admin.payments') }}"
+                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('admin.payments') ? 'bg-green-700' : '' }}">
                 Pembayaran
             </a>
 
-            <a href="{{ route('cart') }}"
-                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('cart') ? 'bg-green-700' : '' }}">
+            <a href="{{ route('admin.shipping') }}"
+                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('admin.shipping') ? 'bg-green-700' : '' }}">
                 Pengiriman
             </a>
 
-            <a href="{{ route('cart') }}"
-                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('cart') ? 'bg-green-700' : '' }}">
+            <a href="{{ route('admin.returns') }}"
+                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('admin.returns') ? 'bg-green-700' : '' }}">
                 Pengembalian
             </a>
         </div>

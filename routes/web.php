@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 
 
-
 Route::get('/', function () {
     return view('main');
 })->name('home');
@@ -59,10 +58,51 @@ Route::group(['prefix' => 'admin'], function () {
         return view('pages.admin.dashboard');
     })->name('admin.dashboard');
 
-    Route::get('/categories', function () {
-        return view('pages.admin.category');
-    })->name('admin.categories');
+    Route::group(['prefix' => 'kategori'], function () {
+        Route::get('/', function () {
+            return view('pages.admin.category');
+        })->name('admin.categories');
 
+        Route::get('/create', function () {
+            return view('pages.admin.category-create');
+        })->name('admin.categories.create');
+
+        Route::post('/', function () {
+            // Logic to store category
+        })->name('admin.categories.store');
+
+        Route::get('/{id}/edit', function ($id) {
+            return view('pages.admin.category-edit', ['id' => $id]);
+        })->name('admin.categories.edit');
+
+        Route::put('/{id}', function ($id) {
+            // Logic to update category
+        })->name('admin.categories.update');
+
+        Route::delete('/{id}', function ($id) {
+            // Logic to delete category
+        })->name('admin.categories.destroy');
+    });
+
+    Route::get('/produk', function () {
+        return view('pages.admin.product');
+    })->name('admin.product');
+
+    Route::get('/pesanan', function () {
+        return view('pages.admin.order');
+    })->name('admin.orders');
+
+    Route::get('/pembayaran', function () {
+        return view('pages.admin.payment');
+    })->name('admin.payments');
+
+    Route::get('/pengiriman', function () {
+        return view('pages.admin.shipping');
+    })->name('admin.shipping');
+
+    Route::get('/pengembalian', function () {
+        return view('pages.admin.return');
+    })->name('admin.returns');
 
 });
 
