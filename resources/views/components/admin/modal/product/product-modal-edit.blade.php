@@ -1,0 +1,219 @@
+@props(['show', 'categories', 'id', 'name', 'price', 'stock', 'status', 'category', 'description'])
+
+
+{{-- Button untuk membuka modal --}}
+<div x-data="{ 
+    imagePreview: null,
+    
+    handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.imagePreview = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    },
+    
+    removeImage() {
+        this.imagePreview = null;
+        this.$refs.imageInput.value = '';
+    },
+    
+    resetForm() {
+        this.imagePreview = null;
+        this.$refs.productForm.reset();
+    }
+}">
+
+    <!-- Modal Overlay -->
+    <div x-show="{{ $show }}" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        @click.self="{{ $show }} = false; resetForm()" style="display: none;">
+        <!-- Modal Content -->
+        <div x-show="{{ $show }}" x-transition:enter="transition ease-out duration-300 transform"
+            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200 transform"
+            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+            class="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" @click.stop>
+            <!-- Modal Header -->
+            <div
+                class="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white rounded-t-lg">
+                <h2 class="text-lg font-semibold text-gray-900">Edit Produk</h2>
+                <button @click="{{ $show }} = false; resetForm()"
+                    class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <form x-ref="productForm" action="{{ route('admin.product.store', $id) }}" method="POST"
+                enctype="multipart/form-data" class="p-6">
+                @csrf
+
+                <!-- Nama Produk -->
+                <div class="mb-4">
+                    <label for="nama_produk" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nama Produk
+                    </label>
+                    <input x-model="{{ $name }}" type="text" id="nama_produk" name="nama_produk"
+                        placeholder="Masukkan nama produk"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                        required>
+                </div>
+
+                <!-- Kategori -->
+                <div class="mb-4">
+                    <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">
+                        Kategori
+                    </label>
+                    <div class="relative">
+                        <select id="kategori" name="kategori_id"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 appearance-none bg-white"
+                            required>
+                            <option value="" selected disabled>Pilih Kategori</option>
+                            <template x-for="category in {{$categories}}" :key="category.id">
+                                <template x-if="{{ $category }} == category.name">
+                                    <option :value="category.id" x-text="category.name" selected></option>
+                                </template>
+                                <template x-if="!{{ $category }} == category.name">
+                                    <option :value="category.id" x-text="category.name"></option>
+                                </template>
+                            </template>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="fill-current h-4 w-4" viewBox="0 0 20 20">
+                                <path
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Harga -->
+                <div class="mb-4">
+                    <label for="harga" class="block text-sm font-medium text-gray-700 mb-2">
+                        Harga
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2 text-gray-500">Rp</span>
+                        <input x-model="{{ $price }}" type="number" id="harga" name="harga" placeholder="0" min="0"
+                            step="1000"
+                            class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                            required>
+                    </div>
+                </div>
+
+                <!-- Stok -->
+                <div class="mb-4">
+                    <label for="stok" class="block text-sm font-medium text-gray-700 mb-2">
+                        Stok
+                    </label>
+                    <input x-model="{{ $stock }}" type="number" id="stok" name="stok" placeholder="0" min="0"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                        required>
+                </div>
+
+                <!-- Deskripsi -->
+                <div class="mb-4">
+                    <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-2">
+                        Deskripsi
+                    </label>
+                    <textarea x-model="{{ $description }}" id="deskripsi" name="deskripsi" rows="4"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-none"
+                        placeholder="Masukkan deskripsi produk..."></textarea>
+                </div>
+
+                <!-- Gambar Produk -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Gambar Produk
+                    </label>
+
+                    <!-- Image Preview Area -->
+                    <div
+                        class="w-full min-h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center relative overflow-hidden">
+                        <!-- Image Preview -->
+                        <div x-show="imagePreview" class="w-full h-full relative">
+                            <img :src="imagePreview" alt="Preview" class="w-full h-auto object-fit">
+                            <button type="button" @click="removeImage()"
+                                class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Placeholder -->
+                        <div x-show="!imagePreview" class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
+                                viewBox="0 0 48 48">
+                                <path
+                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <p class="mt-2 text-sm text-gray-500">Product Image</p>
+                        </div>
+                    </div>
+
+                    <!-- File Input (Hidden) -->
+                    <input type="file" x-ref="imageInput" name="gambar_produk" accept="image/*"
+                        @change="handleImageUpload($event)" class="hidden">
+
+                    <!-- Upload Buttons -->
+                    <div class="flex gap-2 mt-3">
+                        <button type="button" @click="imagePreview = null"
+                            class="px-4 py-2 text-sm border border-red-300 text-red-600 hover:bg-red-50 rounded-md transition-colors duration-200">
+                            Hapus Gambar
+                        </button>
+                        <button type="button" @click="$refs.imageInput.click()"
+                            class="px-4 py-2 text-sm border border-green-300 text-green-600 hover:bg-green-50 rounded-md transition-colors duration-200">
+                            Upload Gambar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="mb-6">
+                    <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
+                        Status
+                    </label>
+                    <div class="relative">
+                        <select id="status" name="status"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 appearance-none bg-white">
+                            <option value="aktif" x-bind:selected="{{ $status }} == 'Aktif'">Aktif</option>
+                            <option value="non-aktif" x-bind:selected="{{ $status }} == 'Nonaktif'">Non-Aktif</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="fill-current h-4 w-4" viewBox="0 0 20 20">
+                                <path
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="flex justify-end space-x-3 border-t border-gray-200 pt-4">
+                    <button type="button" @click="{{ $show }} = false; resetForm()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors duration-200">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -56,8 +56,7 @@
                         <!-- Table Body -->
                         <tbody class="bg-white divide-y divide-gray-200">
 
-                            <template x-data="{ showEditModal: {} }" x-for="category in paginatedCategories"
-                                :key="category.id">
+                            <template x-for="category in paginatedCategories" :key="category.id">
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="text-gray-900 font-medium" x-text="category.name">
@@ -82,7 +81,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center space-x-3">
                                             <!-- Edit Button -->
-                                            <button type="button" x-on:click="showEditModal[category.id] = true"
+                                            <button type="button" @click="selectedCategory = category; showEditModal = true"
                                                 class="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded"
                                                 title="Edit Kategori">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,9 +105,6 @@
                                     </td>
                                 </tr>
 
-                                <!-- Edit Modal -->
-                                <x-admin.modal.category-modal key="category.id" show="showEditModal" name="category.name"
-                                    status="category.status" />
                             </template>
                         </tbody>
                     </table>
@@ -123,7 +119,11 @@
         </div>
 
         <!-- Add Modal -->
-        <x-admin.modal.category-modal show="showAddModal" />
+        <x-admin.modal.category.category-modal show="showAddModal" />
+
+        <!-- Edit Modal -->
+        <x-admin.modal.category.category-modal-edit show="showEditModal" id="selectedCategory?.id"
+            name="selectedCategory?.name" status="selectedCategory?.status" />
 
     </div>
 
@@ -152,6 +152,7 @@
                 // Modal States
                 showAddModal: false,
                 showEditModal: false,
+                selectedCategory: null,
 
                 init() {
                     this.filteredCategories = this.categories;

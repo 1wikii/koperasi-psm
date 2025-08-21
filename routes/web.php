@@ -58,6 +58,8 @@ Route::group(['prefix' => 'admin'], function () {
         return view('pages.admin.dashboard');
     })->name('admin.dashboard');
 
+
+    // Kategori
     Route::group(['prefix' => 'kategori'], function () {
         Route::get('/', function () {
             return view('pages.admin.category');
@@ -84,9 +86,36 @@ Route::group(['prefix' => 'admin'], function () {
         })->name('admin.categories.destroy');
     });
 
-    Route::get('/produk', function () {
-        return view('pages.admin.product');
-    })->name('admin.product');
+    // Produk
+    Route::group(['prefix' => 'produk'], function () {
+        Route::get('/', function () {
+            return view('pages.admin.product');
+        })->name('admin.product');
+
+        Route::get('/create', function () {
+            return view('pages.admin.product-create');
+        })->name('admin.product.create');
+
+        Route::post('/', function () {
+            // Logic to store product
+        })->name('admin.product.store');
+
+        Route::get('/{id}/edit', function ($id) {
+            return view('pages.admin.product-edit', ['id' => $id]);
+        })->name('admin.product.edit');
+
+        Route::put('/{id}', function ($id) {
+            // Logic to update product
+        })->name('admin.product.update');
+
+        Route::delete('/{id}', function ($id) {
+            // Logic to delete product
+        })->name('admin.product.destroy');
+    });
+
+
+
+
 
     Route::get('/pesanan', function () {
         return view('pages.admin.order');

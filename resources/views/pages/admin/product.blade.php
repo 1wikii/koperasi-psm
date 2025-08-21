@@ -61,7 +61,7 @@
             </div>
 
             <!-- Add Button -->
-            <button
+            <button x-on:click="showAddModal = true"
                 class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 shadow-lg rounded-lg flex items-center gap-2 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
@@ -122,7 +122,7 @@
                                 <td class="px-6 py-4">
                                     <div class="flex items-center space-x-3">
                                         <!-- Edit Button -->
-                                        <button type="button" onclick=""
+                                        <button type="button" @click="selectedProduct = product; showEditModal = true"
                                             class="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded"
                                             title="Edit Kategori">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,21 +156,44 @@
             <!-- Pagination -->
             <x-admin.pagination data="filteredProducts" />
         </div>
+
+        <!-- Add Modal -->
+        <x-admin.modal.product.product-modal show="showAddModal" categories="categories" />
+
+        <!-- Edit Modal -->
+        <x-admin.modal.product.product-modal-edit show="showEditModal" categories="categories" id="selectedProduct?.id"
+            name="selectedProduct?.name" price="selectedProduct?.price" stock="selectedProduct?.stock"
+            status="selectedProduct?.status" category="selectedProduct?.category"
+            description="selectedProduct?.description" />
+
     </div>
 
     <script>
         function productManager() {
             return {
+                // mock data Categories
+                categories: [
+                    { id: 1, name: 'Elektronik', products_count: 10, status: 'Aktif' },
+                    { id: 2, name: 'Fashion', products_count: 5, status: 'Nonaktif' },
+                    { id: 3, name: 'Makanan', products_count: 8, status: 'Aktif' },
+                    { id: 4, name: 'Kecantikan', products_count: 12, status: 'Nonaktif' },
+                    { id: 5, name: 'Olahraga', products_count: 7, status: 'Aktif' },
+                    { id: 6, name: 'Peralatan Rumah', products_count: 15, status: 'Nonaktif' },
+                    { id: 7, name: 'Buku', products_count: 20, status: 'Aktif' },
+                    { id: 8, name: 'Mainan', products_count: 10, status: 'Nonaktif' },
+                ],
+
+
                 // filters
                 searchQuery: '',
                 categoryFilter: '',
                 sortFilter: 'terbaru',
                 products: [
-                    { id: 'P1', name: 'Xiaomi GT2', price: 199000, stock: 25, status: 'Aktif', category: 'elektronik', date: '12/01/2025', },
-                    { id: 'P2', name: 'Sepatu', price: 299000, stock: 0, status: 'Habis', category: 'fashion', date: '11/01/2025' },
-                    { id: 'P3', name: 'Chitato', price: 399000, stock: 15, status: 'Aktif', category: 'makanan', date: '10/01/2025' },
-                    { id: 'P4', name: 'Suncreen spa 50++', price: 159000, stock: 8, status: 'Nonaktif', category: 'kecantikan', date: '09/01/2025' },
-                    { id: 'P5', name: 'Xiaomi Mi Band 6', price: 459000, stock: 32, status: 'Aktif', category: 'elektronik', date: '08/01/2025' },
+                    { id: 'P1', name: 'Xiaomi GT2', price: 199000, stock: 25, status: 'Aktif', category: 'elektronik', description: 'Newest smartphone of xiaomi', status: 'Aktif', date: '12/01/2025', },
+                    { id: 'P2', name: 'Sepatu', price: 299000, stock: 0, status: 'Habis', category: 'fashion', description: 'Stylish running shoes', status: 'Nonaktif', date: '11/01/2025' },
+                    { id: 'P3', name: 'Chitato', price: 399000, stock: 15, status: 'Aktif', category: 'makanan', description: 'Delicious potato chips', status: 'Aktif', date: '10/01/2025' },
+                    { id: 'P4', name: 'Suncreen spa 50++', price: 159000, stock: 8, status: 'Nonaktif', category: 'kecantikan', description: 'High protection sunscreen', status: 'Nonaktif', date: '09/01/2025' },
+                    { id: 'P5', name: 'Xiaomi Mi Band 6', price: 459000, stock: 32, status: 'Aktif', category: 'elektronik', description: 'Fitness tracker with AMOLED display', status: 'Aktif', date: '08/01/2025' },
                 ],
 
                 // Pagination states
@@ -178,6 +201,10 @@
                 itemsPerPage: 3,
                 filteredProducts: [],
 
+                // Modal states
+                showAddModal: false,
+                showEditModal: false,
+                selectedProduct: null,
 
                 // pagination 
                 get init() {
