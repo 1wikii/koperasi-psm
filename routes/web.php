@@ -1,24 +1,67 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::get('/', function () {
     return view('main');
 })->name('home');
 
+// Auth Routes
+require __DIR__ . '/auth.php';
 
-Route::get('/login', function () {
-    return view('pages.auth.login');
-})->name('login');
 
-Route::get('/register', function () {
-    return view('pages.auth.register');
-})->name('register');
+// Authentication Routes
+Route::middleware(['auth'])->group(function () {
+    // Dashboard route dengan redirect berdasarkan role
+    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Admin routes (admin dan super_admin)
+Route::middleware(['auth', 'verified', 'role:admin,super_admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', function () {
+            return redirect()->route('dashboard');
+        });
+
+        // Product management, orders, payments, dll
+        // Route::resource('products', ProductController::class);
+        // Route::resource('orders', OrderController::class);
+        // Route::resource('payments', PaymentController::class);
+    });
+
+// Super Admin routes (hanya super_admin)
+Route::middleware(['auth', 'verified', 'role:super_admin'])
+    ->prefix('superadmin')
+    ->name('superadmin.')
+    ->group(function () {
+
+        // User Management
+        // Route::resource('users', UserController::class);
+        // Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])
+        //      ->name('users.toggle-status');
+    
+        // Payment Account Management
+        // Route::resource('payment-accounts', PaymentAccountController::class);
+    });
+
+// Customer routes
+Route::middleware(['auth', 'verified', 'role:customer'])
+    ->prefix('customer')
+    ->name('customer.')
+    ->group(function () {
+        // Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders');
+        // Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
+    });
 
 // PAGES
-
 Route::get('/product', function () {
     return view('pages.product');
 })->name('product');
@@ -112,8 +155,6 @@ Route::group(['prefix' => 'admin'], function () {
             // Logic to delete product
         })->name('admin.product.destroy');
     });
-
-
 
 
 

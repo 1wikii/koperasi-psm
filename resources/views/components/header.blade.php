@@ -25,6 +25,32 @@
             </form>
         </div>
 
+        <!-- Cart -->
+        <div class="flex-shrink-0">
+            <a href="{{ route('cart') }}"
+                class="inline-flex items-center px-4 py-2 text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 relative">
+
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img"
+                    aria-label="Shopping cart" class="inline-block">
+                    <title>Shopping cart</title>
+                    <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M3 3h2l1.6 9.6a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 6H6" />
+                        <circle cx="10" cy="20" r="1.6" fill="currentColor" stroke="none" />
+                        <circle cx="18" cy="20" r="1.6" fill="currentColor" stroke="none" />
+                    </g>
+                </svg>
+
+
+                @if(auth()->check() && auth()->user()->carts()->count() > 0)
+                    <span
+                        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center px-1">
+                        {{ auth()->user()->carts()->count() }}
+                    </span>
+                @endif
+            </a>
+        </div>
+
         <!-- Login Button -->
         <div class="flex-shrink-0">
             @guest
@@ -36,6 +62,8 @@
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open"
                         class="inline-flex items-center px-4 py-2 text-gray-700 hover:text-green-600 font-medium transition-colors duration-200">
+                        <img src="{{ asset(Auth::user()->profile_photo_path) }}" alt="Profile Picture"
+                            class="w-8 h-8 rounded-full me-2">
                         {{ Auth::user()->name }}
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
@@ -44,15 +72,58 @@
                         </svg>
                     </button>
                     <div x-show="open" @click.away="open = false"
-                        class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+
+                        <!-- Profile -->
+                        <a href="{{ route('profile.edit') }}"
+                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            Profile
+                        </a>
+
+                        <!-- Pesanan -->
                         <a href="{{ route('home') }}"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
+                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 11V7a4 4 0 00-8 0v4M8 11v6h8v-6M8 11H6a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2h-2">
+                                </path>
+                            </svg>
+                            Pesanan
+                        </a>
+
+                        <!-- Alamat -->
                         <a href="{{ route('home') }}"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pesanan</a>
-                        <form method="POST" action="{{ route('home') }}">
+                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+                                </path>
+                            </svg>
+                            Alamat
+                        </a>
+
+                        <!-- Separator -->
+                        <div class="border-t border-gray-100 my-1"></div>
+
+                        <!-- Logout -->
+                        <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
-                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+                                class="flex items-center w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 transition-colors duration-200">
+                                <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                    </path>
+                                </svg>
+                                Logout
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -76,15 +147,6 @@
             <a href="{{ route('about-us') }}"
                 class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('about-us') ? 'bg-green-700' : '' }}">
                 Tentang Kami
-            </a>
-            <a href="{{ route('cart') }}"
-                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('cart') ? 'bg-green-700' : '' }}">
-                Keranjang
-                @if(auth()->check() && auth()->user()->cartItems()->count() > 0)
-                    <span class="ml-1 bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
-                        {{ auth()->user()->cartItems()->count() }}
-                    </span>
-                @endif
             </a>
 
             <!-- Categories Dropdown -->

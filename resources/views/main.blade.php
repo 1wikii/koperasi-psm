@@ -38,7 +38,7 @@
 
         <div class="flex flex-col">
             <p class="font-bold mb-4">Kategori</p>
-            <div class="flex gap-3">`
+            <div class="flex gap-3">
                 @foreach ($kategori as $item)
                     <x-kategori id="{{ $item['id'] }}" title="{{ $item['title'] }}" />
                 @endforeach

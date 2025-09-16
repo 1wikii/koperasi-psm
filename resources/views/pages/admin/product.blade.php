@@ -7,7 +7,7 @@
 @section('main')
     <div x-data="productManager()" class="container mx-auto px-4 py-8">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
+        <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900">Kelola Produk</h1>
         </div>
 
