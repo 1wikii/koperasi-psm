@@ -215,7 +215,7 @@ class ProfileController extends Controller
             $address->delete();
 
             DB::commit();
-            return redirect()->route('user.profile.addresses')
+            return redirect()->back()
                 ->with('success', 'Alamat berhasil dihapus!');
 
         } catch (\Exception $e) {

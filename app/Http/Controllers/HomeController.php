@@ -35,7 +35,7 @@ class HomeController extends Controller
                 $q->where('name', 'like', '%' . $searchQuery . '%')
                     ->orWhere('description', 'like', '%' . $searchQuery . '%');
             })
-            ->get();
+            ->paginate(10);
 
         return view('pages.product.index', [
             'products' => $products,

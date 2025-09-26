@@ -90,7 +90,7 @@ Route::middleware(['auth', 'role:customer'])
         Route::get('/profile/address', [ProfileController::class, 'address'])->name('profile.address');
         Route::post('/profile/address', [ProfileController::class, 'addAddress'])->name('profile.addAddress');
         Route::post('/profile/address/{id}', [ProfileController::class, 'updateAddress'])->name('profile.updateAddress');
-        Route::delete('/profile/address/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.deleteAddress');
+        Route::delete('/profile/address/{id}', [ProfileController::class, 'delAddress'])->name('profile.deleteAddress');
 
         Route::get('/profile/orders', [ProfileController::class, 'orders'])->name('profile.orders');
         Route::post('/profile/orders/{id}', [ProfileController::class, 'completeOrder'])->name('profile.completeOrder');
@@ -109,7 +109,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
 
     // Checkout
-    // Route::get('/checkout/cart', [CheckoutController::class, 'checkoutCart'])->name('checkout.cart');
+    Route::get('/checkout/cart', [CheckoutController::class, 'checkoutCart'])->name('checkout.cart');
     Route::post('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');
     Route::post('/checkout/process', [CheckoutController::class, 'checkoutProcess'])->name('checkout.process');
 });

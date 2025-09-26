@@ -23,7 +23,7 @@ class ProductController extends Controller
             ->where('products.is_active', true)
             ->select('products.*')
             ->with('category:id,name,slug')
-            ->get();
+            ->paginate(10);
         return view('pages.product.index', compact('products'));
     }
 
