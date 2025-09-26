@@ -28,8 +28,9 @@ class User extends Authenticatable
         'email_verified_at',
         'is_active',
         'phone',
-        'remmember_token',
+        'remember_token',
         'password',
+        'profile_photo_path',
     ];
 
     /**

@@ -22,7 +22,6 @@ class Orders extends Model
         'user_id',
     ];
 
-
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -30,12 +29,12 @@ class Orders extends Model
 
     public function orderItems()
     {
-        return $this->hasMany(OrderItems::class);
+        return $this->hasMany(OrderItems::class, 'order_id');
     }
 
     public function payment()
     {
-        return $this->hasOne(Payments::class);
+        return $this->hasOne(Payments::class, 'order_id');
     }
 
     public function shipment()
@@ -47,4 +46,5 @@ class Orders extends Model
     {
         return $this->hasMany(Returns::class);
     }
+
 }

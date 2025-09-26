@@ -14,7 +14,9 @@ return new class extends Migration {
             $table->id();
             $table->string('label');
             $table->string('recipient_name');
-            $table->text('address');
+            $table->string('phone')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->text('address')->nullable();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

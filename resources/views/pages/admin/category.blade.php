@@ -5,95 +5,104 @@
 @endsection
 
 @section('main')
-    <div x-data="categoryManager()" class="min-h-screen bg-gray-50 p-6">
-        <div class="max-w-7xl mx-auto">
-            <!-- Header -->
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">Kelola Kategori</h1>
-            </div>
+    <div x-data="categoryManager()" class="container mx-auto px-4 pt-8 flex flex-col min-h-screen">
 
-            <!-- Search Bar -->
-            <div class="mb-6 flex justify-between gap-x-4">
-                <div class="flex-1">
-                    <input type="text" x-model="searchQuery" @input="filterCategories" placeholder="Cari kategori..."
-                        class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white shadow-lg">
-                </div>
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Kelola Kategori</h1>
+        </div>
 
-                <!-- Add Button -->
-                <button x-on:click="openAddModal()"
-                    class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 shadow-lg rounded-lg flex items-center gap-2 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Error Alert -->
+        <x-admin.error-validation />
+
+        <!-- Search Bar -->
+        <div class="mb-6 flex justify-between gap-x-4">
+            <div class="flex-1 relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6">
-                        </path>
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
-                    Tambah Kategori
-                </button>
+                </div>
+                <input type="text" x-model="searchQuery" @input="filterCategories" placeholder="Cari kategori..."
+                    class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white shadow-lg">
             </div>
 
-            <!-- Categories Table -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <!-- Table Header -->
-                        <thead class="bg-gray-50 border-b border-gray-200">
-                            <tr class="text-gray-900">
-                                <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                                    <span>Nama Kategori</span>
-                                </th>
-                                <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                                    <span>Jumlah Produk</span>
-                                </th>
-                                <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                                    <span>Status</span>
-                                </th>
-                                <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                                    <span>Aksi</span>
-                                </th>
-                            </tr>
-                        </thead>
+            <!-- Add Button -->
+            <button x-on:click="openAddModal()"
+                class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 shadow-lg rounded-lg flex items-center gap-2 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                    </path>
+                </svg>
+                Tambah Kategori
+            </button>
+        </div>
 
-                        <!-- Table Body -->
-                        <tbody class="bg-white divide-y divide-gray-200">
+        <!-- Categories Table -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 max-h-screen overflow-auto">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <!-- Table Header -->
+                    <thead class="bg-green-50 ">
+                        <tr class="text-gray-900">
+                            <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                                <span>Icon</span>
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                                <span>Nama Kategori</span>
+                            </th>
+                            <th class="px-6 py-4 text-center text-xs font-medium uppercase tracking-wider">
+                                <span>Jumlah Produk</span>
+                            </th>
+                            <th class="px-6 py-4 text-center text-xs font-medium uppercase tracking-wider">
+                                <span></span>
+                            </th>
+                        </tr>
+                    </thead>
 
-                            <template x-for="category in paginatedCategories" :key="category.id">
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-gray-900 font-medium" x-text="category.name">
-                                            <!-- category.name -->
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-gray-900 font-medium" x-text="category.products_count">
-                                            <!-- category.products_count -->
-                                        </span>
-                                    </td>
+                    <!-- Table Body -->
+                    <tbody class="bg-white divide-y divide-gray-200">
 
-                                    <!-- Status -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full"
-                                            :class="getStatusClass(category.status)" x-text="category.status">
-                                            <!-- category.status -->
-                                        </span>
-                                    </td>
+                        <template x-for="category in paginatedCategories" :key="category.id">
+                            <tr class="hover:bg-gray-50 transition-colors">
 
-                                    <!-- Actions -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center space-x-3">
-                                            <!-- Edit Button -->
-                                            <button type="button" @click="selectedCategory = category; showEditModal = true"
-                                                class="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded"
-                                                title="Edit Kategori">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                    </path>
-                                                </svg>
-                                            </button>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img x-bind:src="baseUrl + category.image" alt="image"
+                                        class="w-10 h-10 object-cover rounded">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-gray-900 font-medium" x-text="category.name">
+                                        <!-- category.name -->
+                                    </span>
+                                </td>
+                                <td class="text-center px-6 py-4 whitespace-nowrap">
+                                    <span class="text-gray-900 font-medium" x-text="category.product_count">
+                                        <!-- category.products_count -->
+                                    </span>
+                                </td>
 
-                                            <!-- Delete Button -->
-                                            <button type="button" onclick=""
-                                                class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded"
+                                <!-- Actions -->
+                                <td class="text-center px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-3">
+                                        <!-- Edit Button -->
+                                        <button type="button" @click="openEditModal(category);"
+                                            class="text-green-600 hover:text-green-400 transition-colors p-1 rounded"
+                                            title="Edit Kategori">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                </path>
+                                            </svg>
+                                        </button>
+
+                                        <!-- Delete Button -->
+                                        <form :action="baseUrl + 'admin/category/' + category.id" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                onclick="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');"
+                                                class="text-red-600 hover:text-red-400 transition-colors p-1 rounded"
                                                 title="Hapus Kategori">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -101,61 +110,189 @@
                                                     </path>
                                                 </svg>
                                             </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
 
-                            </template>
-                        </tbody>
-                    </table>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <x-admin.empty-table data="filteredCategories" />
+
+        <!-- Add Modal -->
+        <x-admin.modal.category.category-modal show="showAddModal" :errors="$errors" />
+
+
+        <!-- Edit Modal -->
+        <div x-show="showEditModal" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            @click.self="showEditModal = false" style="display: none;">
+            <!-- Modal Content -->
+            <div x-show="showEditModal" x-transition:enter="transition ease-out duration-300 transform"
+                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-200 transform"
+                x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4" @click.stop>
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Edit Kategori</h2>
+                    <button @click="showEditModal = false"
+                        class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                            </path>
+                        </svg>
+                    </button>
                 </div>
+
+                <!-- Modal Body -->
+                <form :action=" baseUrl + 'admin/category/' + editData.id" method="POST" enctype="multipart/form-data"
+                    @submit="validateEditForm($event)">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="p-6 max-h-[70vh] overflow-y-auto">
+                        <!-- Icon -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Icon
+                            </label>
+
+                            <!-- Image Preview Area -->
+                            <div
+                                class="p-4 h-28 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center">
+                                <!-- Image Preview -->
+                                <div x-show="editData.imagePreview || editData.currentImage"
+                                    class="w-full h-full flex items-center justify-center">
+                                    <img :src="editData.imagePreview || getImageUrl()" alt="Preview"
+                                        class="max-w-full max-h-full object-contain rounded">
+                                </div>
+
+                                <!-- Placeholder -->
+                                <div x-show="!editData.imagePreview && !editData.currentImage" class="text-center">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
+                                        viewBox="0 0 48 48">
+                                        <path
+                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <p class="mt-2 text-sm text-gray-500">Icon</p>
+                                </div>
+                            </div>
+
+                            <!-- File Input (Hidden) -->
+                            <input type="file" x-ref="imageInput" name="image" accept="image/*"
+                                @change="handleImageUpload($event)" class="hidden">
+
+                            <!-- Error Message for Icon -->
+                            <div x-show="editData.iconError" class="mt-2 text-sm text-red-600" x-text="editData.iconError">
+                            </div>
+
+                            <!-- Upload Buttons -->
+                            <div class="flex gap-2 mt-3">
+                                <button type="button" @click="removeImage()"
+                                    class="px-4 py-2 text-sm border border-red-300 text-red-600 hover:bg-red-50 rounded-md transition-colors duration-200">
+                                    Hapus Icon
+                                </button>
+                                <button type="button" @click="$refs.imageInput.click()"
+                                    class="px-4 py-2 text-sm border border-green-300 text-green-600 hover:bg-green-50 rounded-md transition-colors duration-200">
+                                    Upload Icon
+                                </button>
+                            </div>
+
+                            @error('icon')
+                                <div class="mt-2 text-sm text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Nama Kategori -->
+                        <div class="mb-4">
+                            <label for="edit_nama_kategori" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nama Kategori
+                            </label>
+                            <input type="text" id="edit_nama_kategori" name="name" placeholder="Masukkan nama kategori"
+                                :value="editData.name"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200"
+                                required>
+
+                            @error('name')
+                                <div class="mt-2 text-sm text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                    </div>
+                    <!-- Modal Footer -->
+                    <div class="flex justify-end space-x-3 border-t border-gray-200 p-4">
+                        <button type="button" @click="showEditModal = false"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors duration-200">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <!-- Empty State -->
-            <x-admin.empty-table data="filteredCategories" />
+        </div>
 
+
+        <!-- Pagination -->
+        <div class="mt-auto">
             <!-- Pagination -->
             <x-admin.pagination data="filteredCategories" />
         </div>
 
-        <!-- Add Modal -->
-        <x-admin.modal.category.category-modal show="showAddModal" />
 
-        <!-- Edit Modal -->
-        <x-admin.modal.category.category-modal-edit show="showEditModal" id="selectedCategory?.id"
-            name="selectedCategory?.name" status="selectedCategory?.status" />
 
     </div>
 
-    <!-- JavaScript for interactions -->
     <script>
         function categoryManager() {
             return {
-                categories: [
-                    { id: 1, name: 'Elektronik', products_count: 10, status: 'Aktif' },
-                    { id: 2, name: 'Fashion', products_count: 5, status: 'Nonaktif' },
-                    { id: 3, name: 'Makanan', products_count: 8, status: 'Aktif' },
-                    { id: 4, name: 'Kecantikan', products_count: 12, status: 'Nonaktif' },
-                    { id: 5, name: 'Olahraga', products_count: 7, status: 'Aktif' },
-                    { id: 6, name: 'Peralatan Rumah', products_count: 15, status: 'Nonaktif' },
-                    { id: 7, name: 'Buku', products_count: 20, status: 'Aktif' },
-                    { id: 8, name: 'Mainan', products_count: 10, status: 'Nonaktif' },
-                ],
+                baseUrl: '{{ asset('') }}',
+                categories: @json($categories),
 
                 searchQuery: '',
 
                 // Pagination states
                 currentPage: 1,
-                itemsPerPage: 3,
+                itemsPerPage: 5,
                 filteredCategories: [], // This will hold the filtered categories
 
                 // Modal States
                 showAddModal: false,
                 showEditModal: false,
-                selectedCategory: null,
+                validationErrors: @json($errors->toArray()),
+                editData: {
+                    id: '',
+                    name: '',
+                    currentImage: null,
+                    imagePreview: null,
+                    iconError: '',
+                },
 
                 init() {
                     this.filteredCategories = this.categories;
+
+                    // Check if there are validation errors and open the appropriate modal
+                    if (Object.keys(this.validationErrors).length > 0) {
+                        // Check session or old input to determine which modal to open
+                        @if(session('_method') === 'PUT')
+                            this.showEditModal = true;
+                        @else
+                            this.showAddModal = true;
+                        @endif
+                                             }
                 },
 
                 get paginatedCategories() {
@@ -229,12 +366,74 @@
                     this.showAddModal = true;
                 },
 
-                openEditModal() {
+
+                /**
+                 * Edit Modal Handlers
+                 */
+                openEditModal(category) {
+                    // populate editData
+                    this.editData.id = category.id;
+                    this.editData.name = category.name;
+                    this.editData.currentImage = category.image;
+
                     this.showAddModal = false;
                     this.showEditModal = true;
+                },
+
+                getImageUrl() {
+                    return this.editData.currentImage ? this.baseUrl + this.editData.currentImage : null;
+                },
+
+                handleImageUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.editData.imagePreview = e.target.result;
+                            this.editData.iconError = '';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                removeImage() {
+                    this.editData.imagePreview = null;
+                    this.editData.currentImage = null;
+                    this.$refs.imageInput.value = '';
+                    this.editData.iconError = '';
+                },
+
+                validateEditForm(event) {
+                    // Reset error
+                    this.editData.iconError = '';
+
+                    // For edit, we don't require a new icon if there's already a current image
+                    // Only validate if both currentImage and new image are missing
+                    if (!this.editData.currentImage && !this.$refs.imageInput.files.length && !this.editData.imagePreview) {
+                        event.preventDefault();
+                        this.editData.iconError = 'Icon kategori harus dipilih';
+                        return false;
+                    }
+
+                    return true;
                 }
+
             }
         }
 
     </script>
+
+    <script>
+        function editCategoryData() {
+            return {
+
+
+
+
+
+
+            };
+        }
+    </script>
+
 @endsection

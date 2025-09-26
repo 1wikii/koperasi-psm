@@ -4,24 +4,24 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <!-- Logo & Company Info -->
             <div class="space-y-4">
-                <div class="flex flex-col items-center space-x-3">
+                <a href="{{ route('home') }}" class="flex flex-col items-center space-x-3">
                     <!-- Logo -->
                     <img src="{{ asset('logo.svg') }}" alt="Koperasi PSM" class="w-12 h-12">
                     <div>
                         <h3 class="text-lg font-bold text-gray-800">Koperasi <span class="text-green-600">PSM</span>
                         </h3>
                     </div>
-                </div>
+                </a>
             </div>
 
             <!-- Navigation Links -->
             <div class="space-y-2">
                 <h4 class="text-gray-600 font-medium mb-3">Koperasi <span class="text-green-600">PSM</span></h4>
                 <ul class="space-y-2">
-                    <li><a href="{{ route('home') }}"
+                    <li><a href="{{ route('about-us') }}"
                             class="text-gray-600 hover:text-green-600 transition-colors">Tentang Kami</a>
                     </li>
-                    <li><a href="{{ route('home') }}"
+                    <li><a href="{{ route('products.index') }}"
                             class="text-gray-600 hover:text-green-600 transition-colors">Produk</a></li>
                 </ul>
             </div>
@@ -37,7 +37,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span class="text-gray-600">{{ config('app.address', 'Lorem') }}</span>
+                        <a href="https://www.google.com/maps?q={{ urlencode(config('app.address', 'Bandar Lampung')) }}"
+                            target="_blank" rel="noopener"
+                            class="text-gray-600 hover:text-green-600 cursor-pointer underline">{{ config('app.address', 'Bandar Lampung') }}</a>
                     </div>
 
                     <div class="flex items-center space-x-3">
@@ -45,7 +47,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
-                        <span class="text-gray-600">{{ config('app.phone', 'Lorem') }}</span>
+                        <a href="tel:{{ config('app.phone', '+6282285978581') }}"
+                            class="text-gray-600 hover:text-green-600 cursor-pointer">{{ config('app.phone', '+6282285978581') }}</a>
                     </div>
 
                     <div class="flex items-center space-x-3">
@@ -53,7 +56,10 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
-                        <span class="text-gray-600">{{ config('app.email', 'Lorem') }}</span>
+                        <a href="mailto:{{ config('app.email', 'koperasipsm@gmail.com') }}"
+                            class="text-gray-600 hover:text-green-600 cursor-pointer">{{ config('
+                            app.email', 'koperasipsm@gmail.com')
+                            }}</a>
                     </div>
                 </div>
             </div>
@@ -62,7 +68,7 @@
             <div class="space-y-4">
                 <h4 class="text-gray-800 font-semibold text-lg">Ikuti Kami</h4>
                 <div class="flex space-x-4">
-                    <a href="{{ config('app.instagram_url', '#') }}"
+                    <a href="{{ config('app.instagram_url', 'https://www.instagram.com/') }}"
                         class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
                         target="_blank" rel="noopener">
                         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -71,7 +77,7 @@
                         </svg>
                     </a>
 
-                    <a href="{{ config('app.tiktok_url', '#') }}"
+                    <a href="{{ config('app.tiktok_url', 'https://www.tiktok.com/') }}"
                         class="w-10 h-10 bg-black rounded-full flex items-center justify-center hover:scale-110 transition-transform"
                         target="_blank" rel="noopener">
                         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">

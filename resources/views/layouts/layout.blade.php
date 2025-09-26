@@ -15,10 +15,20 @@
     <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 
-<body class="flex flex-col min-h-screen px-28 md:px-46 lg:px-60">
+<body class="flex flex-col min-h-screen px-8 md:px-14 lg:px-32">
     <main class="">
         @include('components.header')
         <div class="flex-grow">
+            <!-- Success Alert -->
+            @if (session('success'))
+                <x-modal-success />
+            @endif
+
+            <!-- Error Alert -->
+            @if (session('error'))
+                <x-modal-error />
+            @endif
+
             @yield('main')
         </div>
         @include('components.footer')

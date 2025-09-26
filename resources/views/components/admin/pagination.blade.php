@@ -1,6 +1,6 @@
 @props(['data'])
 
-<div class="bg-white px-6 py-3 border-t border-gray-200 flex items-center justify-between">
+<div class="bg-gray-50 px-6 py-3 flex items-center justify-between">
     <div class="text-sm text-gray-500">
         Menampilkan <span class="me-1" x-text="((currentPage - 1) * itemsPerPage) + 1"></span>ke <span
             x-text="Math.min(currentPage * itemsPerPage, {{ $data }}.length)"></span> dari <span
@@ -24,20 +24,21 @@
     </div>
     <div class="flex items-center space-x-2">
         <button @click="previousPage" :disabled="currentPage === 1"
-            :class="currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-green-600'"
-            class="px-3 py-1 text-sm transition-colors">
+            :class="currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-green-600 hover:text-white'"
+            class="appearance-non border border-gray-300 rounded-lg shadow-lg px-3 py-1 text-sm transition-colors">
             Sebelumnya
         </button>
 
         <template x-for="page in getPageNumbers()" :key="page">
             <button @click="goToPage(page)"
-                :class="page === currentPage ? 'bg-green-600 text-white' : 'text-gray-500 hover:text-green-600'"
-                class="px-3 py-1 text-sm rounded transition-colors" x-text="page"></button>
+                :class="page === currentPage ? 'bg-green-600 text-white' : 'hover:bg-green-600 hover:text-white'"
+                class="appearance-non border border-gray-300 rounded-lg shadow-lg px-3 py-1 text-sm transition-colors"
+                x-text="page"></button>
         </template>
 
         <button @click="nextPage" :disabled="currentPage === totalPages"
-            :class="currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-green-600'"
-            class="px-3 py-1 text-sm transition-colors">
+            :class="currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-green-600 hover:text-white'"
+            class="appearance-non border border-gray-300 rounded-lg shadow-lg px-3 py-1 text-sm transition-colors ">
             Selanjutnya
         </button>
     </div>

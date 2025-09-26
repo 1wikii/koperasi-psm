@@ -1,178 +1,117 @@
 <?php
 
+use App\Http\Controllers\admin\AdminController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\product\CartController;
+use App\Http\Controllers\product\CheckoutController;
+use App\Http\Controllers\product\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\superAdmin\PaymentAccountController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('main');
-})->name('home');
 
-// Auth Routes
+/*********** Public Routes *************/
+Route::get('/', [HomeController::class, 'indexHome'])->name('home');
+Route::get('/about-us', [HomeController::class, 'indexAboutUs'])->name('about-us');
+Route::get('/search', [HomeController::class, 'search'])->name('search');
+
+// Products
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/category/{categorySlug}', [ProductController::class, 'indexCategory'])->name('products.category');
+Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
+
+
+/**
+ * Auth Routes
+ * 
+ */
 require __DIR__ . '/auth.php';
 
 
-// Authentication Routes
-Route::middleware(['auth'])->group(function () {
-    // Dashboard route dengan redirect berdasarkan role
-    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    // Profile routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-// Admin routes (admin dan super_admin)
-Route::middleware(['auth', 'verified', 'role:admin,super_admin'])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
-        Route::get('/', function () {
-            return redirect()->route('dashboard');
-        });
-
-        // Product management, orders, payments, dll
-        // Route::resource('products', ProductController::class);
-        // Route::resource('orders', OrderController::class);
-        // Route::resource('payments', PaymentController::class);
-    });
-
-// Super Admin routes (hanya super_admin)
-Route::middleware(['auth', 'verified', 'role:super_admin'])
+/**
+ *  Super Admin routes (hanya super_admin)
+ * 
+ */
+Route::middleware(['auth', 'role:super_admin'])
     ->prefix('superadmin')
     ->name('superadmin.')
     ->group(function () {
 
-        // User Management
-        // Route::resource('users', UserController::class);
-        // Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])
-        //      ->name('users.toggle-status');
-    
-        // Payment Account Management
-        // Route::resource('payment-accounts', PaymentAccountController::class);
+        Route::get('/payment-accounts', [PaymentAccountController::class, 'index'])->name('payment-accounts.index');
+        Route::post('/payment-accounts', [PaymentAccountController::class, 'store'])->name('payment-accounts.store');
+        Route::put('/payment-accounts/{id}', [PaymentAccountController::class, 'update'])->name('payment-accounts.update');
+        Route::delete('/payment-accounts/{id}', [PaymentAccountController::class, 'destroy'])->name('payment-accounts.destroy');
     });
+
+/**
+ * Admin routes (admin dan super_admin)
+ * 
+ */
+Route::middleware(['auth', 'role:admin,super_admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/category', [AdminController::class, 'category'])->name('category');
+        Route::post('/category', [AdminController::class, 'categoryStore'])->name('category.store');
+        Route::put('/category/{id}', [AdminController::class, 'categoryUpdate'])->name('category.update');
+        Route::delete('/category/{id}', [AdminController::class, 'categoryDelete'])->name('category.delete');
+
+        Route::get('/product', [AdminController::class, 'product'])->name('products');
+        Route::post('/product', [AdminController::class, 'productStore'])->name('products.store');
+        Route::put('/product/{id}', [AdminController::class, 'productUpdate'])->name('products.update');
+        Route::delete('/product/{id}', [AdminController::class, 'productDelete'])->name('products.delete');
+
+        Route::get('/order', [AdminController::class, 'order'])->name('orders');
+        Route::post('/order/approve/{id}', [AdminController::class, 'approvePayment'])->name('order.approve');
+        Route::post('/order/reject/{id}', [AdminController::class, 'rejectPayment'])->name('order.reject');
+
+
+
+        // Fitur yang akan belum ditambahkan
+        Route::get('/payment', [AdminController::class, 'payment'])->name('payments');
+        Route::get('/return', [AdminController::class, 'return'])->name('returns');
+        Route::get('/shipping', [AdminController::class, 'shipping'])->name('shippings');
+    });
+
 
 // Customer routes
-Route::middleware(['auth', 'verified', 'role:customer'])
-    ->prefix('customer')
-    ->name('customer.')
+Route::middleware(['auth', 'role:customer'])
+    ->prefix('user')
+    ->name('user.')
     ->group(function () {
-        // Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders');
-        // Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
+
+        // Profile routes
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        Route::get('/profile/address', [ProfileController::class, 'address'])->name('profile.address');
+        Route::post('/profile/address', [ProfileController::class, 'addAddress'])->name('profile.addAddress');
+        Route::post('/profile/address/{id}', [ProfileController::class, 'updateAddress'])->name('profile.updateAddress');
+        Route::delete('/profile/address/{id}', [ProfileController::class, 'deleteAddress'])->name('profile.deleteAddress');
+
+        Route::get('/profile/orders', [ProfileController::class, 'orders'])->name('profile.orders');
+        Route::post('/profile/orders/{id}', [ProfileController::class, 'completeOrder'])->name('profile.completeOrder');
+
     });
 
-// PAGES
-Route::get('/product', function () {
-    return view('pages.product');
-})->name('product');
+// Customer router without prefix 'user'
+Route::middleware(['auth', 'role:customer'])->group(function () {
 
-Route::get('/product-detail', function () {
-    return view('pages.product-detail');
-})->name('product.detail');
+    // Cart
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 
-Route::get('/about-us', function () {
-    return view('pages.about-us');
-})->name('about-us');
-
-Route::get('/cart', function () {
-    return view('pages.cart');
-})->name('cart');
-
-Route::get('/checkout', function () {
-    return view('pages.checkout');
-})->name('checkout');
-
-Route::get('/checkout-process', function () {
-    return view('pages.checkout');
-})->name('checkout.process');
+    Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 
 
-Route::get('/address', function () {
-    return view('pages.address');
-})->name('address');
-Route::post('/address-store', function () {
-    return view('pages.address');
-})->name('addresses.store');
-
-
-
-Route::group(['prefix' => 'admin'], function () {
-    Route::get('/', function () {
-        return view('pages.admin.dashboard');
-    })->name('admin.dashboard');
-
-
-    // Kategori
-    Route::group(['prefix' => 'kategori'], function () {
-        Route::get('/', function () {
-            return view('pages.admin.category');
-        })->name('admin.categories');
-
-        Route::get('/create', function () {
-            return view('pages.admin.category-create');
-        })->name('admin.categories.create');
-
-        Route::post('/', function () {
-            // Logic to store category
-        })->name('admin.categories.store');
-
-        Route::get('/{id}/edit', function ($id) {
-            return view('pages.admin.category-edit', ['id' => $id]);
-        })->name('admin.categories.edit');
-
-        Route::put('/{id}', function ($id) {
-            // Logic to update category
-        })->name('admin.categories.update');
-
-        Route::delete('/{id}', function ($id) {
-            // Logic to delete category
-        })->name('admin.categories.destroy');
-    });
-
-    // Produk
-    Route::group(['prefix' => 'produk'], function () {
-        Route::get('/', function () {
-            return view('pages.admin.product');
-        })->name('admin.product');
-
-        Route::get('/create', function () {
-            return view('pages.admin.product-create');
-        })->name('admin.product.create');
-
-        Route::post('/', function () {
-            // Logic to store product
-        })->name('admin.product.store');
-
-        Route::get('/{id}/edit', function ($id) {
-            return view('pages.admin.product-edit', ['id' => $id]);
-        })->name('admin.product.edit');
-
-        Route::put('/{id}', function ($id) {
-            // Logic to update product
-        })->name('admin.product.update');
-
-        Route::delete('/{id}', function ($id) {
-            // Logic to delete product
-        })->name('admin.product.destroy');
-    });
-
-
-
-    Route::get('/pesanan', function () {
-        return view('pages.admin.order');
-    })->name('admin.orders');
-
-    Route::get('/pembayaran', function () {
-        return view('pages.admin.payment');
-    })->name('admin.payments');
-
-    Route::get('/pengiriman', function () {
-        return view('pages.admin.shipping');
-    })->name('admin.shipping');
-
-    Route::get('/pengembalian', function () {
-        return view('pages.admin.return');
-    })->name('admin.returns');
-
+    // Checkout
+    // Route::get('/checkout/cart', [CheckoutController::class, 'checkoutCart'])->name('checkout.cart');
+    Route::post('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout/process', [CheckoutController::class, 'checkoutProcess'])->name('checkout.process');
 });
+
 

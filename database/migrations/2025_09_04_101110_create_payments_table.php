@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->decimal('amount', 12, 2);
+            $table->decimal('amount', 12, 0);
             $table->string('payment_proof');
             $table->dateTime('transfer_date');
             $table->string('sender_name');
@@ -22,7 +22,6 @@ return new class extends Migration {
             $table->unsignedBigInteger('verified_by')->nullable();
             $table->dateTime('verified_at')->nullable();
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
-            $table->foreignId('payment_account_id')->nullable()->constrained('payment_accounts')->onDelete('cascade');
             $table->foreign('verified_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
             $table->index(['status'], 'idx_payments_status');

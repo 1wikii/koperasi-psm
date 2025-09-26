@@ -13,12 +13,12 @@ return new class extends Migration {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique();
-            $table->json('images')->nullable();
+            $table->text('images')->nullable();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 10, 0)->default(0);
             $table->integer('stock')->default(0);
-            $table->decimal('weight', 8, 2)->nullable();
+            $table->decimal('weight', 8, 0)->nullable();
             $table->boolean('is_active')->default(true);
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->timestamps();

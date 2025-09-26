@@ -23,6 +23,6 @@ class Categories extends Model
 
     public function products()
     {
-        return $this->hasMany(Products::class);
+        return $this->hasMany(Products::class, 'category_id', 'id');
     }
 }

@@ -1,5 +1,5 @@
 <!-- Header -->
-<header class="">
+<header>
     <div class="flex items-center justify-between h-16">
         <!-- Logo -->
         <div class="flex-shrink-0 flex items-center">
@@ -10,9 +10,10 @@
 
         <!-- Search Bar -->
         <div class="flex-1 max-w-2xl mx-8">
-            <form action="{{ route('home') }}" method="GET" class="relative">
+            <form action="{{ route('search') }}" method="GET" class="relative">
+                @csrf
                 <div class="relative">
-                    <input type="text" name="q" placeholder="Cari Produk" value="{{ request('q') }}"
+                    <input type="text" name="q" placeholder="Cari Produk" value="{{ isset($q) ? $q : '' }}"
                         class="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all duration-200">
                     <button type="submit"
                         class="absolute right-1 top-1/2 transform -translate-y-1/2 bg-green-600 hover:bg-green-700 text-white p-2 rounded-full transition-colors duration-200">
@@ -27,7 +28,7 @@
 
         <!-- Cart -->
         <div class="flex-shrink-0">
-            <a href="{{ route('cart') }}"
+            <a href="{{ route('cart.index') }}"
                 class="inline-flex items-center px-4 py-2 text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 relative">
 
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img"
@@ -62,8 +63,11 @@
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open"
                         class="inline-flex items-center px-4 py-2 text-gray-700 hover:text-green-600 font-medium transition-colors duration-200">
-                        <img src="{{ asset(Auth::user()->profile_photo_path) }}" alt="Profile Picture"
-                            class="w-8 h-8 rounded-full me-2">
+                        <div
+                            class="me-1 w-8 h-8 rounded-full border-4 border-gray-200 bg-gray-100 overflow-hidden relative">
+                            <img src="{{ asset(Auth::user()->profile_photo_path) }}" alt="Profile Picture"
+                                class="w-full h-full object-cover">
+                        </div>
                         {{ Auth::user()->name }}
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
@@ -75,7 +79,7 @@
                         class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
 
                         <!-- Profile -->
-                        <a href="{{ route('profile.edit') }}"
+                        <a href="{{ route('user.profile.edit') }}"
                             class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
                             <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -85,18 +89,18 @@
                         </a>
 
                         <!-- Pesanan -->
-                        <a href="{{ route('home') }}"
+                        <a href="{{ route('user.profile.orders') }}"
                             class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
                             <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 11V7a4 4 0 00-8 0v4M8 11v6h8v-6M8 11H6a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2h-2">
                                 </path>
                             </svg>
-                            Pesanan
+                            Pesananku
                         </a>
 
                         <!-- Alamat -->
-                        <a href="{{ route('home') }}"
+                        <a href="{{ route('user.profile.address') }}"
                             class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
                             <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -135,13 +139,13 @@
 <!-- Navigation Menu -->
 <nav class="bg-green-600 text-white sticky top-0 z-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center space-x-8 h-12">
+        <div class="flex items-center justify-center space-x-8 h-12">
             <a href="{{ route('home') }}"
                 class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('home') ? 'bg-green-700' : '' }}">
                 Beranda
             </a>
-            <a href="{{ route('product') }}"
-                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('product') ? 'bg-green-700' : '' }}">
+            <a href="{{ route('products.index') }}"
+                class="hover:bg-green-700 px-3 py-2 rounded transition-colors duration-200 {{ request()->routeIs('products.index') ? 'bg-green-700' : '' }}">
                 Produk
             </a>
             <a href="{{ route('about-us') }}"
@@ -162,19 +166,13 @@
                 </button>
                 <div x-show="open" @click.away="open = false"
                     class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50">
-                    @php
-                        $categories = [
-                            ['id' => 1, 'name' => 'Makanan', 'slug' => 'makanan'],
-                            ['id' => 2, 'name' => 'Minuman', 'slug' => 'minuman'],
-                            ['id' => 3, 'name' => 'Kesehatan', 'slug' => 'kesehatan'],
-                            ['id' => 4, 'name' => 'Elektronik', 'slug' => 'elektronik'],
-                            ['id' => 5, 'name' => 'Pakaian', 'slug' => 'pakaian'],
-                            ['id' => 6, 'name' => 'Rumah Tangga', 'slug' => 'rumah-tangga'],
-                        ];
 
+                    @php
+                        $categories = \App\Models\Categories::where('is_active', true)->select('name', 'slug')->get();
                     @endphp
+
                     @foreach($categories as $category)
-                        <a href="{{ route('home', $category['slug']) }}"
+                        <a href="{{ route('products.category', $category['slug']) }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             {{ $category['name'] }}
                         </a>

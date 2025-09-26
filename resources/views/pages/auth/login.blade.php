@@ -65,7 +65,7 @@
             <div class="pt-4">
                 <button type="submit"
                     class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                    Daftar
+                    Masuk
                 </button>
             </div>
         </form>

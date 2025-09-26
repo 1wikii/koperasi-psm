@@ -28,7 +28,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Buat sanctum token
+        $token = Auth::user()->createToken('web-token')->plainTextToken;
+        // Simpan token ke session (atau return ke frontend kalau pakai SPA)
+        session(['api_token' => $token]);
+
+        if (Auth::user()->hasRole('admin') || Auth::user()->hasRole('super_admin')) {
+            return redirect()->intended(route('admin.dashboard'))->with('api_token', $token);
+        }
+
+        return redirect()->intended(route('home'))->with('api_token', $token);
     }
 
     /**
@@ -36,6 +45,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
